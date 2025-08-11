@@ -1,4 +1,4 @@
-package main
+package connectDB
 
 import (
 	"context"
@@ -12,8 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func main() {
-	// Load file .env
+func ConnectTravelDB() *mongo.Database {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No found .env file")
 	}
@@ -33,13 +32,6 @@ func main() {
 		log.Fatalf("Connect error: %v", err)
 	}
 
-	// Đảm bảo đóng kết nối khi xong
-	defer func() {
-		if err = client.Disconnect(context.Background()); err != nil {
-			log.Fatalf("Disconnect error: %v", err)
-		}
-	}()
-
 	// Ping để kiểm tra kết nối
 	if err := client.Ping(ctx, nil); err != nil {
 		log.Fatalf("Ping error: %v", err)
@@ -47,9 +39,9 @@ func main() {
 
 	// Lấy DB Travel
 	db := client.Database("Travel")
-
-	// In ra thông báo nếu thành công
 	if db != nil {
 		fmt.Println("connect success")
 	}
+
+	return db
 }

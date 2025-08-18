@@ -24,6 +24,7 @@ func SetupRouter(
 		{
 			userRoutes.POST("/signup", userController.SignUp)
 			userRoutes.POST("/login", userController.Login)
+			userRoutes.POST("/forgot-password", userController.ForgotPassword)
 		}
 	}
 

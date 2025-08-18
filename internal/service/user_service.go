@@ -7,6 +7,7 @@ import (
 type UserService interface {
 	Login(ctx context.Context, user model.User) (model.User, error)
 	SignUp(ctx context.Context, user model.User) (model.User, error)
+	ForgotPassword(ctx context.Context, user model.User) (model.User, error)
 }
 
 type userService struct {
@@ -23,4 +24,8 @@ func (s *userService) Login(ctx context.Context, user model.User) (model.User, e
 
 func (s *userService) SignUp(ctx context.Context, user model.User) (model.User, error) {
 	return s.repo.SignUp(ctx, user)
+}
+
+func (s *userService) ForgotPassword(ctx context.Context, user model.User) (model.User, error) {
+	return s.repo.ForgotPassword(ctx, user)
 }

@@ -12,6 +12,7 @@ import (
 type UserRepository interface {
 	Login(ctx context.Context, user model.User) (model.User, error)
 	SignUp(ctx context.Context, user model.User) (model.User, error)
+	ForgotPassword(ctx context.Context, user model.User) (model.User, error)
 }
 
 type userRepository struct {
@@ -67,3 +68,37 @@ func (r *userRepository) SignUp(ctx context.Context, user model.User) (model.Use
 	}
 	return model.User{},  fmt.Errorf("User already exist")
 }
+
+func (r *userRepository) ForgotPassword(ctx context.Context, user model.User) (model.User, error) {
+	collection := r.db.Collection("Users")
+
+	if user.Email == "" {
+		return model.User{}, fmt.Errorf("Email is required")
+	}
+	if len(user.Email) < 8 {
+		return model.User{}, fmt.Errorf("Email must be at least 8 characters")
+	}
+	if user.Password == "" {
+		return model.User{}, fmt.Errorf("Password is required")
+	}
+
+	condition := bson.M{"email": user.Email}
+	update := bson.M{"$set": bson.M{"password": user.Password}}
+
+	result, err := collection.UpdateOne(ctx, condition, update)
+	if err != nil {
+		return model.User{}, err
+	}
+
+	if result.MatchedCount == 0 {
+		return model.User{}, fmt.Errorf("no user found with this email")
+	}
+
+	var updatedUser model.User
+	if err := collection.FindOne(ctx, condition).Decode(&updatedUser); err != nil {
+		return model.User{}, err
+	}
+
+	return updatedUser, nil
+}
+

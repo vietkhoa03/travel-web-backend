@@ -7,10 +7,10 @@ import (
 )
 
 func SetupRouter(
+	r *gin.Engine,
 	locationController *controller.LocationController,
 	userController *controller.UserController,
 ) *gin.Engine {
-	r := gin.Default()
 
 	v1 := r.Group("/api/v1")
 	{
